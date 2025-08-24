@@ -33,10 +33,8 @@ export function AuthProvider({ children }) {
    * email as the user object; in a real app you would call
    * signInWithEmailAndPassword from Firebase and handle errors.
    */
-  const signIn = async (email, password) => {
-    // simulate network delay
+  const signIn = async (userObj) => {
     await new Promise((resolve) => setTimeout(resolve, 300));
-    const userObj = { email };
     setUser(userObj);
     localStorage.setItem('rosterUser', JSON.stringify(userObj));
   };

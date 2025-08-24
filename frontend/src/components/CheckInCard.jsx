@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useGeo } from '../hooks/useGeo.js';
 import { calculateDistance } from '../lib/geo.js';
 import { submitClockEvent } from '../lib/api.js';
+import { useToast } from '../lib/toastStore.js';
 
 /**
  * CheckInCard displays the user's current proximity to the job site and
@@ -15,6 +16,7 @@ import { submitClockEvent } from '../lib/api.js';
 function CheckInCard() {
   const { position, error: geoError } = useGeo();
   const [checkedIn, setCheckedIn] = useState(false);
+  const toast = useToast();
   const site = { name: 'Site A', lat: -33.865143, lng: 151.209900 }; // Sydney CBD as example
 
   // Compute distance to site when position changes.  Returns metres.
@@ -30,7 +32,7 @@ function CheckInCard() {
       return;
     }
     try {
-      await submitClockEvent({
+      const res = await submitClockEvent({
         type,
         ts: new Date().toISOString(),
         siteId: site.name,
@@ -38,8 +40,11 @@ function CheckInCard() {
         lng: position.lng
       });
       setCheckedIn(type === 'clockIn');
+      if (res?.txHash) {
+        toast.show(`Checked in ✅ — tx: ${res.txHash.slice(0, 10)}…`);
+      }
     } catch (err) {
-      alert(err.message || 'Failed to submit event');
+      toast.show('Check-in failed');
     }
   };
 

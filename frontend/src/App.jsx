@@ -6,6 +6,7 @@ import Roster from './pages/Roster.jsx';
 import Timesheet from './pages/Timesheet.jsx';
 import Swaps from './pages/Swaps.jsx';
 import { useAuth } from './lib/auth.js';
+import Toast from './components/Toast.jsx';
 
 /**
  * Main application component.  It controls whether the user is
@@ -27,14 +28,17 @@ function App() {
   }
 
   return (
-    <Routes>
-      <Route path="/" element={<Dashboard />} />
-      <Route path="/roster" element={<Roster />} />
-      <Route path="/timesheet" element={<Timesheet />} />
-      <Route path="/swaps" element={<Swaps />} />
-      {/* Unknown routes redirect to the dashboard */}
-      <Route path="*" element={<Navigate to="/" />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/roster" element={<Roster />} />
+        <Route path="/timesheet" element={<Timesheet />} />
+        <Route path="/swaps" element={<Swaps />} />
+        {/* Unknown routes redirect to the dashboard */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+      <Toast />
+    </>
   );
 }
 
