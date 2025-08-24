@@ -14,8 +14,18 @@ function Dashboard() {
 
   return (
     <div className="container">
+      {user && (
+        <div
+          style={{
+            background: '#eee',
+            padding: '10px',
+            textAlign: 'center',
+          }}
+        >
+          Hello, {user.email}!
+        </div>
+      )}
       <h2>Dashboard</h2>
-      <p>Welcome {user?.email}</p>
       <CheckInCard />
       <nav style={{ marginTop: '1rem', display: 'flex', gap: '1rem' }}>
         <Link to="/roster">Roster</Link>
