@@ -1,4 +1,5 @@
 import React from 'react';
+import { useToast } from '../lib/toastStore.js';
 
 /**
  * Toast component displays a transient notification message.  It
@@ -6,7 +7,10 @@ import React from 'react';
  * the toast.  When no message is provided the toast is hidden.
  */
 function Toast({ message, onClose }) {
-  if (!message) return null;
+  const store = useToast();
+  const msg = message ?? store.message;
+  const handleClose = onClose ?? store.clear;
+  if (!msg) return null;
   return (
     <div
       style={{
@@ -20,9 +24,9 @@ function Toast({ message, onClose }) {
         borderRadius: '4px',
         zIndex: 1000
       }}
-      onClick={onClose}
+      onClick={handleClose}
     >
-      {message}
+      {msg}
     </div>
   );
 }

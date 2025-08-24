@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../lib/auth.js';
+import { login } from '../lib/api.js';
 
 /**
  * Login page.  Uses the useAuth hook to sign in a user via
@@ -15,8 +16,10 @@ function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setError(null);
     try {
-      await signIn(email, password);
+      const data = await login(email, password);
+      await signIn({ email: data.email, token: data.token });
     } catch (err) {
       setError(err.message || 'Authentication failed');
     }
