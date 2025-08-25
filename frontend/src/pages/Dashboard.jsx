@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import CheckInCard from '../components/CheckInCard.jsx';
-import { useAuth } from '../lib/auth.js';
+import { useAuth } from '../lib/auth.jsx';
 
 /**
  * Dashboard page.  The main landing page after login that shows a
