@@ -5,7 +5,7 @@ import Dashboard from './pages/Dashboard.jsx';
 import Roster from './pages/Roster.jsx';
 import Timesheet from './pages/Timesheet.jsx';
 import Swaps from './pages/Swaps.jsx';
-import { useAuth } from './lib/auth.js';
+import { useAuth } from './lib/auth.jsx';
 import Toast from './components/Toast.jsx';
 
 /**
