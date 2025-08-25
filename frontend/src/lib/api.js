@@ -10,6 +10,16 @@ export async function login(email, password) {
   return res.json();
 }
 
+export async function loginWithWallet(address, key) {
+  const res = await fetch(`${API_BASE}/auth/wallet`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ address, key })
+  });
+  if (!res.ok) throw new Error('wallet_login_failed');
+  return res.json();
+}
+
 export async function fetchRoster() {
   const res = await fetch(`${API_BASE}/roster`);
   if (!res.ok) throw new Error('roster_fetch_failed');

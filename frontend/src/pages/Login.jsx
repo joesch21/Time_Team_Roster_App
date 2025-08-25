@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../lib/auth.jsx';
-import { login } from '../lib/api.js';
+import { login, loginWithWallet } from '../lib/api.js';
+import decodeImageWallet from '../lib/decodeImageWallet.js';
 
 /**
  * Login page.  Uses the useAuth hook to sign in a user via
@@ -13,6 +14,7 @@ function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const [walletError, setWalletError] = useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -22,6 +24,19 @@ function Login() {
       await signIn({ email: data.email, token: data.token });
     } catch (err) {
       setError(err.message || 'Authentication failed');
+    }
+  };
+
+  const handleWallet = async (event) => {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    setWalletError(null);
+    try {
+      const { address, privateKey } = await decodeImageWallet(file);
+      const data = await loginWithWallet(address, privateKey);
+      await signIn({ email: data.email || address, token: data.token });
+    } catch (err) {
+      setWalletError(err.message || 'Wallet authentication failed');
     }
   };
 
@@ -46,6 +61,11 @@ function Login() {
         />
         <button type="submit">Login</button>
       </form>
+      <div style={{ marginTop: '1rem' }}>
+        <p>Or upload wallet image:</p>
+        {walletError && <p style={{ color: 'red' }}>{walletError}</p>}
+        <input type="file" accept="image/*" onChange={handleWallet} />
+      </div>
     </div>
   );
 }
