@@ -16,4 +16,13 @@ router.post('/login', (req, res) => {
   res.json({ token: 'dummy-token', email });
 });
 
+router.post('/wallet', (req, res) => {
+  const { address, key } = req.body;
+  if (!address || !key) {
+    return res.status(400).json({ error: 'Missing address or key' });
+  }
+  // TODO: validate wallet credentials
+  res.json({ token: 'wallet-token', email: address });
+});
+
 export default router;
