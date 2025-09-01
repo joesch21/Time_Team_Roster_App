@@ -17,6 +17,7 @@ const AuthContext = createContext({});
  */
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [web3, setWeb3] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // On mount, read the user from localStorage and clear the loading flag
@@ -50,7 +51,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signOut, web3, setWeb3 }}>
       {children}
     </AuthContext.Provider>
   );

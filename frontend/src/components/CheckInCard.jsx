@@ -1,8 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { useGeo } from '../hooks/useGeo.js';
 import { calculateDistance } from '../lib/geo.js';
-import { submitClockEvent } from '../lib/api.js';
 import { useToast } from '../lib/toastStore.js';
+import { useAccount } from 'wagmi';
+import { logClock } from '../web3/write.js';
+import { useAuth } from '../lib/auth.jsx';
 
 /**
  * CheckInCard displays the user's current proximity to the job site and
@@ -17,6 +19,8 @@ function CheckInCard() {
   const { position, error: geoError } = useGeo();
   const [checkedIn, setCheckedIn] = useState(false);
   const toast = useToast();
+  const { address } = useAccount();
+  const { web3 } = useAuth();
   const site = { name: 'Site A', lat: -33.865143, lng: 151.209900 }; // Sydney CBD as example
 
   // Compute distance to site when position changes.  Returns metres.
@@ -31,17 +35,26 @@ function CheckInCard() {
       alert('You are too far from the site to clock in/out.');
       return;
     }
+    const account = web3?.account || address;
+    if (!account) {
+      toast.show('Connect a wallet first');
+      return;
+    }
     try {
-      const res = await submitClockEvent({
-        type,
-        ts: new Date().toISOString(),
-        siteId: site.name,
-        lat: position.lat,
-        lng: position.lng
+      const ts = Math.floor(Date.now() / 1000);
+      const attHash = '0x' + crypto.randomUUID().replace(/-/g, '').padEnd(64, '0');
+      const contractAddress = import.meta.env.VITE_CONTRACT_TIMELOG;
+      const txHash = await logClock({
+        account,
+        contractAddress,
+        isIn: type === 'clockIn',
+        ts,
+        shiftId: site.name,
+        attHash
       });
       setCheckedIn(type === 'clockIn');
-      if (res?.txHash) {
-        toast.show(`Checked in ✅ — tx: ${res.txHash.slice(0, 10)}…`);
+      if (txHash) {
+        toast.show(`Checked in ✅ — tx: ${txHash.slice(0, 10)}…`);
       }
     } catch (err) {
       toast.show('Check-in failed');

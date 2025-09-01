@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import CheckInCard from '../components/CheckInCard.jsx';
 import { useAuth } from '../lib/auth.jsx';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 /**
  * Dashboard page.  The main landing page after login that shows a
@@ -10,7 +11,7 @@ import { useAuth } from '../lib/auth.jsx';
  * sign out via a button.
  */
 function Dashboard() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, web3 } = useAuth();
 
   return (
     <div className="container">
@@ -19,10 +20,17 @@ function Dashboard() {
           style={{
             background: '#eee',
             padding: '10px',
-            textAlign: 'center',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
           }}
         >
-          Hello, {user.email}!
+          <span>Hello, {user.email}!</span>
+          {web3?.type === 'image' ? (
+            <span>Image Wallet: {web3.address.slice(0, 10)}…</span>
+          ) : (
+            <ConnectButton />
+          )}
         </div>
       )}
       <h2>Dashboard</h2>
