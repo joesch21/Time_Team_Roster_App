@@ -1,10 +1,11 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Login from './pages/Login.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Roster from './pages/Roster.jsx';
 import Timesheet from './pages/Timesheet.jsx';
 import Swaps from './pages/Swaps.jsx';
+import RosterAdmin from './pages/RosterAdmin.jsx';
 import { useAuth } from './lib/auth.jsx';
 import Toast from './components/Toast.jsx';
 
@@ -16,9 +17,14 @@ import Toast from './components/Toast.jsx';
  */
 function App() {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return <div className="container">Loading…</div>;
+  }
+
+  if (!user && location.pathname === '/admin/roster') {
+    return <RosterAdmin />;
   }
 
   // If no user is signed in, always show the login page.  Once the
@@ -34,6 +40,7 @@ function App() {
         <Route path="/roster" element={<Roster />} />
         <Route path="/timesheet" element={<Timesheet />} />
         <Route path="/swaps" element={<Swaps />} />
+        <Route path="/admin/roster" element={<RosterAdmin />} />
         {/* Unknown routes redirect to the dashboard */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
