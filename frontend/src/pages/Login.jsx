@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../lib/auth.jsx';
-import { login, loginWithWallet } from '../lib/api.js';
+import { login } from '../lib/api.js';
 import decodeImageWallet from '../lib/decodeImageWallet.js';
+import { makeLocalAccount } from '../web3/localSigner.js';
 
 /**
  * Login page.  Uses the useAuth hook to sign in a user via
@@ -10,7 +11,7 @@ import decodeImageWallet from '../lib/decodeImageWallet.js';
  * here; other sign‑in methods (e.g. Apple) can be added later.
  */
 function Login() {
-  const { signIn } = useAuth();
+  const { signIn, setWeb3 } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -33,8 +34,10 @@ function Login() {
     setWalletError(null);
     try {
       const { address, privateKey } = await decodeImageWallet(file);
-      const data = await loginWithWallet(address, privateKey);
-      await signIn({ email: data.email || address, token: data.token });
+      const pk = privateKey.startsWith('0x') ? privateKey : `0x${privateKey}`;
+      const account = makeLocalAccount(pk);
+      setWeb3({ type: 'image', address, account });
+      await signIn({ email: address, token: 'image' });
     } catch (err) {
       setWalletError(err.message || 'Wallet authentication failed');
     }

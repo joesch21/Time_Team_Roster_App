@@ -1,0 +1,26 @@
+[
+  {
+    "type": "event",
+    "name": "Clocked",
+    "inputs": [
+      {"name": "worker", "type": "address", "indexed": true},
+      {"name": "ts", "type": "uint256", "indexed": false},
+      {"name": "isIn", "type": "bool", "indexed": false},
+      {"name": "shiftId", "type": "string", "indexed": false},
+      {"name": "attHash", "type": "bytes32", "indexed": false}
+    ]
+  },
+  {
+    "type": "function",
+    "name": "log",
+    "stateMutability": "nonpayable",
+    "inputs": [
+      {"name": "worker", "type": "address"},
+      {"name": "ts", "type": "uint256"},
+      {"name": "isIn", "type": "bool"},
+      {"name": "shiftId", "type": "string"},
+      {"name": "attHash", "type": "bytes32"}
+    ],
+    "outputs": []
+  }
+]
