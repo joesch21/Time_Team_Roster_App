@@ -1,0 +1,21 @@
+{
+  "name": "time-team-roster-onchain",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "clean": "rimraf cache artifacts",
+    "compile": "hardhat compile",
+    "deploy:testnet": "hardhat run scripts/deploy.ts --network opbnbTestnet",
+    "deploy:mainnet": "hardhat run scripts/deploy.ts --network opbnb",
+    "abi:copy": "node -e \"const fs=require('fs');const p='./artifacts/contracts/TimeLog.sol/TimeLog.json';const o='../frontend/src/web3/TimeLog.abi.json';const j=JSON.parse(fs.readFileSync(p));fs.mkdirSync('../frontend/src/web3',{recursive:true});fs.writeFileSync(o,JSON.stringify(j.abi,null,2));console.log('ABI written to',o)\""
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.10",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.5.4",
+    "ts-node": "^10.9.2"
+  }
+}
+

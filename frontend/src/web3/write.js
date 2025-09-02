@@ -1,24 +1,51 @@
-import { createPublicClient, createWalletClient, http, custom } from 'viem'
-import { opBNB, opBNBTestnet } from './chains'
-import ABI from './TimeLog.abi.json'
+import { createPublicClient, createWalletClient, http } from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
 
-const isTest = import.meta.env.VITE_USE_TESTNET === 'true'
-const chain = isTest ? opBNBTestnet : opBNB
-const RPC = chain.rpcUrls.default.http[0]
+// Chain config (opBNB or testnet) – keep consistent with your existing chains setup.
+export const chain = {
+  id: (import.meta.env.VITE_USE_TESTNET === 'true') ? 5611 : 204, // opBNB testnet : mainnet
+  rpcUrls: {
+    default: { http: [(import.meta.env.VITE_USE_TESTNET === 'true' ? import.meta.env.VITE_OPBNB_RPC_TESTNET : import.meta.env.VITE_OPBNB_RPC_MAINNET)] }
+  }
+};
+
+const RPC = chain.rpcUrls.default.http[0];
+
+export function makeLocalAccount(hexPrivateKey) {
+  const pk = hexPrivateKey.startsWith('0x') ? hexPrivateKey : `0x${hexPrivateKey}`;
+  return privateKeyToAccount(pk);
+}
 
 export function getClients(account) {
-  const transport = account && account.signTransaction ? http(RPC) : custom(window.ethereum)
-  const publicClient = createPublicClient({ chain, transport })
-  const walletClient = createWalletClient({ chain, transport, account })
-  return { publicClient, walletClient }
+  const publicClient = createPublicClient({ chain, transport: http(RPC) });
+  const walletClient = createWalletClient({ chain, transport: http(RPC), account });
+  return { publicClient, walletClient };
 }
 
-export async function logClock({ account, contractAddress, isIn, ts, shiftId, attHash }) {
-  const { walletClient } = getClients(account)
+export async function logClock({ account, isIn, ts, shiftId, attHash }) {
+  const address = import.meta.env.VITE_CONTRACT_TIMELOG;
+  const abi = (await import('./TimeLog.abi.json')).default || (await import('./TimeLog.abi.json'));
+  const { walletClient } = getClients(account);
+  // TimeLog.log(address worker, uint256 ts, bool isIn, string shiftId, bytes32 attHash)
   return walletClient.writeContract({
-    address: contractAddress,
-    abi: ABI,
+    address,
+    abi,
     functionName: 'log',
     args: [account.address ?? account, BigInt(ts), isIn, shiftId, attHash]
-  })
+  });
 }
+
+// Usage from your UI (image-wallet or connected wallet):
+//
+// import { logClock, makeLocalAccount } from '../web3/write';
+//
+// // For image-wallet session:
+// const local = makeLocalAccount(privateKey); // keep only in memory
+// await logClock({
+//   account: local,
+//   isIn: true,                      // or false for clock out
+//   ts: Math.floor(Date.now()/1000),
+//   shiftId: 'FT-2025-09-08-Mon-1',  // your ID format
+//   attHash: '0x' + '00'.repeat(32)  // placeholder
+// });
+

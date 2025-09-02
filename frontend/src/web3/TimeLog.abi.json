@@ -4,7 +4,7 @@
     "name": "Clocked",
     "inputs": [
       {"name": "worker", "type": "address", "indexed": true},
-      {"name": "ts", "type": "uint256", "indexed": false},
+      {"name": "timestamp", "type": "uint256", "indexed": false},
       {"name": "isIn", "type": "bool", "indexed": false},
       {"name": "shiftId", "type": "string", "indexed": false},
       {"name": "attHash", "type": "bytes32", "indexed": false}
