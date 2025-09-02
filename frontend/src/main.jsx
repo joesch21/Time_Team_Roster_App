@@ -6,10 +6,13 @@ import './index.css';
 import { AuthProvider } from './lib/auth.jsx';
 import Web3Providers from './web3/provider.jsx';
 
+// Only register the Service Worker when the PWA plugin is enabled
 if (import.meta.env.PROD || import.meta.env.VITE_ENABLE_PWA_DEV === 'true') {
   import('virtual:pwa-register')
     .then(({ registerSW }) => registerSW({ immediate: true }))
-    .catch(() => {});
+    .catch(() => {
+      /* plugin not present in normal dev */
+    });
 }
 
 // Entry point for the React app.  We wrap the App component in a
