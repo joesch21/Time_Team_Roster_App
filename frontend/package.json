@@ -4,24 +4,26 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build:wasm": "wasm-pack build --release ./frontend/wasm/wallet_decoder --target web --out-dir ./frontend/src/wasm",
-    "build": "npm run build:wasm && vite build",
-    "preview": "vite preview --port 4173"
+    "build": "yarn wasm:build && vite build",
+    "preview": "vite preview --port 4173",
+    "wasm:build:encoder": "wasm-pack build ./wasm/condor_encoder --target web --out-dir ./src/wasm/encoder",
+    "wasm:build:wallet": "wasm-pack build ./wasm/condor_wallet --target web --out-dir ./src/wasm/wallet",
+    "wasm:build": "yarn wasm:build:encoder && yarn wasm:build:wallet"
   },
   "dependencies": {
+    "@rainbow-me/rainbowkit": "^2.1.3",
+    "@tanstack/react-query": "^5.51.8",
+    "@wagmi/core": "^2.10.8",
     "firebase": "^9.22.2",
     "js-cookie": "^3.0.1",
+    "luxon": "^3.4.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.14.1",
-    "luxon": "^3.4.4",
-    "zod": "^3.22.2",
-    "zustand": "^4.3.6",
-    "wagmi": "^2.10.8",
     "viem": "^2.9.28",
-    "@tanstack/react-query": "^5.51.8",
-    "@wagmi/core": "^2.10.8",
-    "@rainbow-me/rainbowkit": "^2.1.3"
+    "wagmi": "^2.10.8",
+    "zod": "^3.22.2",
+    "zustand": "^4.3.6"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.0.1",

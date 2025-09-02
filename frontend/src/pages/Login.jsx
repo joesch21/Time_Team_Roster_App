@@ -1,21 +1,18 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth.jsx';
 import { login } from '../lib/api.js';
-import decodeImageWallet from '../lib/decodeImageWallet.js';
+import { loadDecoder } from '../lib/condorEncoder';
 import { makeLocalAccount } from '../web3/localSigner.js';
 
-/**
- * Login page.  Uses the useAuth hook to sign in a user via
- * Firebase authentication.  This page is shown whenever there is
- * no authenticated user.  A simple email/password form is provided
- * here; other sign‑in methods (e.g. Apple) can be added later.
- */
 function Login() {
   const { signIn, setWeb3 } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [walletError, setWalletError] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePass, setImagePass] = useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -28,13 +25,15 @@ function Login() {
     }
   };
 
-  const handleWallet = async (event) => {
-    const file = event.target.files && event.target.files[0];
-    if (!file) return;
+  const handleImageLogin = async () => {
+    if (!imageFile) return;
     setWalletError(null);
     try {
-      const { address, privateKey } = await decodeImageWallet(file);
-      const pk = privateKey.startsWith('0x') ? privateKey : `0x${privateKey}`;
+      const { decodeFromImage } = await loadDecoder();
+      const bytes = new Uint8Array(await imageFile.arrayBuffer());
+      const { address, key } = decodeFromImage(bytes, imagePass);
+      const pk = key.startsWith('0x') ? key : `0x${key}`;
+      if (!/^0x[0-9a-fA-F]{64}$/.test(pk)) throw new Error('Invalid private key format');
       const account = makeLocalAccount(pk);
       setWeb3({ type: 'image', address, account });
       await signIn({ email: address, token: 'image' });
@@ -67,7 +66,17 @@ function Login() {
       <div style={{ marginTop: '1rem' }}>
         <p>Or upload wallet image:</p>
         {walletError && <p style={{ color: 'red' }}>{walletError}</p>}
-        <input type="file" accept="image/*" onChange={handleWallet} />
+        <input type="file" accept="image/png" onChange={(e) => setImageFile(e.target.files?.[0] || null)} />
+        <input
+          type="password"
+          placeholder="Passphrase"
+          value={imagePass}
+          onChange={(e) => setImagePass(e.target.value)}
+        />
+        <button onClick={handleImageLogin}>Login with Image</button>
+        <p style={{ marginTop: '0.5rem' }}>
+          <Link to="/signup">Create wallet image</Link>
+        </p>
       </div>
     </div>
   );
