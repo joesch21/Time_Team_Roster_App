@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { generateYear, toCSV, storeRoster, loadRoster } from '../utils/generate-year';
+import RecentEvents from '../components/RecentEvents.jsx';
 
 export default function RosterAdmin() {
   const [year, setYear] = useState(2025);
   const [anchor, setAnchor] = useState('2025-09-08'); // Monday
   const [data, setData] = useState(null);
   const [msg, setMsg] = useState('');
+  const [csvRows, setCsvRows] = useState(null);
 
   const onGenerate = () => {
     const d = generateYear({ year: Number(year), anchorMondayISO: anchor });
@@ -31,6 +33,20 @@ export default function RosterAdmin() {
   const onExportPT = () => data && dl(toCSV(data.partTime), `parttime-${data.year}.csv`);
   const onExportJSON = () => data && dl(JSON.stringify(data, null, 2), `roster-${data.year}.json`);
   const onLoad = () => setData(loadRoster(Number(year)));
+  const onImport = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const text = await file.text();
+    const lines = text.trim().split(/\r?\n/).slice(1); // skip header
+    const rows = lines.map((line) => {
+      const [date, day, start, end] = line.split(',');
+      return { date, day, start, end };
+    });
+    setData({ year: Number(year), fullTime: rows, partTime: [] });
+    setCsvRows(rows);
+    setMsg('CSV loaded');
+    e.target.value = '';
+  };
 
   return (
     <div style={{maxWidth: 720, margin: '2rem auto'}}>
@@ -52,6 +68,7 @@ export default function RosterAdmin() {
         <button onClick={onExportPT} disabled={!data}>Export CSV (PT)</button>
         <button onClick={onExportJSON} disabled={!data}>Download JSON</button>
         <button onClick={onLoad}>Load saved</button>
+        <input type="file" accept=".csv" onChange={onImport} />
       </div>
 
       <p style={{color:'#0a7'}}>{msg}</p>
@@ -64,6 +81,7 @@ export default function RosterAdmin() {
           </pre>
         </>
       )}
+      <RecentEvents />
     </div>
   );
 }

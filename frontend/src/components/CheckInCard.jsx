@@ -3,7 +3,7 @@ import { useGeo } from '../hooks/useGeo.js';
 import { calculateDistance } from '../lib/geo.js';
 import { useToast } from '../lib/toastStore.js';
 import { useAccount } from 'wagmi';
-import { logClock } from '../web3/write.js';
+import { logClockDirect, logClockViaRelayer } from '../web3/write.js';
 import { useAuth } from '../lib/auth.jsx';
 
 /**
@@ -15,7 +15,7 @@ import { useAuth } from '../lib/auth.jsx';
  * information would come from the roster and the current check‑in
  * status from the timesheet.
  */
-function CheckInCard() {
+function CheckInCard({ mode }) {
   const { position, error: geoError } = useGeo();
   const [checkedIn, setCheckedIn] = useState(false);
   const toast = useToast();
@@ -43,10 +43,9 @@ function CheckInCard() {
     try {
       const ts = Math.floor(Date.now() / 1000);
       const attHash = '0x' + crypto.randomUUID().replace(/-/g, '').padEnd(64, '0');
-      const contractAddress = import.meta.env.VITE_CONTRACT_TIMELOG;
-      const txHash = await logClock({
+      const fn = mode === 'direct' ? logClockDirect : logClockViaRelayer;
+      const txHash = await fn({
         account,
-        contractAddress,
         isIn: type === 'clockIn',
         ts,
         shiftId: site.name,
@@ -55,6 +54,8 @@ function CheckInCard() {
       setCheckedIn(type === 'clockIn');
       if (txHash) {
         toast.show(`Checked in ✅ — tx: ${txHash.slice(0, 10)}…`);
+      } else {
+        toast.show('Clock event submitted ✅');
       }
     } catch (err) {
       toast.show('Check-in failed');

@@ -5,6 +5,9 @@ import App from './App.jsx';
 import './index.css';
 import { AuthProvider } from './lib/auth.jsx';
 import Web3Providers from './web3/provider.jsx';
+import { registerSW } from 'virtual:pwa-register';
+
+registerSW({ immediate: true });
 
 // Entry point for the React app.  We wrap the App component in a
 // BrowserRouter so that react‑router can manage client side routes.
