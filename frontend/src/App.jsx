@@ -9,6 +9,7 @@ import RosterAdmin from './pages/RosterAdmin.jsx';
 import Signup from './pages/Signup.jsx';
 import { useAuth } from './lib/auth.jsx';
 import Toast from './components/Toast.jsx';
+import EnvBanner from './components/EnvBanner.jsx';
 
 function App() {
   const { user, loading } = useAuth();
@@ -19,12 +20,19 @@ function App() {
   }
 
   if (!user && location.pathname === '/admin/roster') {
-    return <RosterAdmin />;
+    return (
+      <>
+        <EnvBanner />
+        <RosterAdmin />
+        <Toast />
+      </>
+    );
   }
 
   if (!user) {
     return (
       <>
+        <EnvBanner />
         <Routes>
           <Route path="/signup" element={<Signup />} />
           <Route path="*" element={<Login />} />
@@ -36,6 +44,7 @@ function App() {
 
   return (
     <>
+      <EnvBanner />
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/roster" element={<Roster />} />

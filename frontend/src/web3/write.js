@@ -1,5 +1,6 @@
 import { createPublicClient, createWalletClient, http } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
+import { submitClockEvent } from '../lib/api.js'
 
 // Chain config (opBNB or testnet) – keep consistent with your existing chains setup.
 export const chain = {
@@ -22,7 +23,7 @@ export function getClients(account) {
   return { publicClient, walletClient };
 }
 
-export async function logClock({ account, isIn, ts, shiftId, attHash }) {
+export async function logClockDirect({ account, isIn, ts, shiftId, attHash }) {
   const address = import.meta.env.VITE_CONTRACT_TIMELOG;
   const abi = (await import('./TimeLog.abi.json')).default || (await import('./TimeLog.abi.json'));
   const { walletClient } = getClients(account);
@@ -33,6 +34,18 @@ export async function logClock({ account, isIn, ts, shiftId, attHash }) {
     functionName: 'log',
     args: [account.address ?? account, BigInt(ts), isIn, shiftId, attHash]
   });
+}
+
+export async function logClockViaRelayer({ account, isIn, ts, shiftId, attHash }) {
+  const event = {
+    worker: account.address ?? account,
+    ts,
+    isIn,
+    shiftId,
+    attHash,
+  };
+  const res = await submitClockEvent(event);
+  return res.txHash;
 }
 
 // Usage from your UI (image-wallet or connected wallet):
