@@ -3,7 +3,7 @@
 // unlocking image-based wallets.
 
 export async function loadEncoder() {
-  const mod = await import('../wasm/encoder/condor_encoder.js');
+  const mod = await import('@/wasm/encoder/condor_encoder.js');
   await mod.default();
   return {
     generateWallet: mod.generate_wallet,
@@ -12,7 +12,7 @@ export async function loadEncoder() {
 }
 
 export async function loadDecoder() {
-  const mod = await import('../wasm/wallet/condor_wallet.js');
+  const mod = await import('@/wasm/wallet/condor_wallet.js');
   await mod.default();
   return {
     decodeFromImage: mod.decode_wallet_from_image,

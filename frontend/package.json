@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "wasm:build:encoder": "wasm-pack build ./wasm/condor_encoder --target web --out-dir ./src/wasm/encoder --out-name condor_encoder",
+    "wasm:build:wallet": "wasm-pack build ./wasm/condor_wallet  --target web --out-dir ./src/wasm/wallet  --out-name condor_wallet",
+    "wasm:build": "yarn wasm:build:encoder && yarn wasm:build:wallet",
     "dev": "vite",
-    "build": "yarn wasm:build && vite build",
-    "preview": "vite preview --port 4173",
-    "wasm:build:encoder": "wasm-pack build ./wasm/condor_encoder --target web --out-dir ./src/wasm/encoder",
-    "wasm:build:wallet": "wasm-pack build ./wasm/condor_wallet --target web --out-dir ./src/wasm/wallet",
-    "wasm:build": "yarn wasm:build:encoder && yarn wasm:build:wallet"
+    "build": "vite build",
+    "preview": "vite preview --port 4173"
   },
   "dependencies": {
     "@rainbow-me/rainbowkit": "^2.1.3",
