@@ -1,0 +1,16 @@
+[package]
+name = "condor_wallet"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = "0.2"
+serde = { version = "1", features = ["derive"] }
+serde-wasm-bindgen = "0.5"
+hex = "0.4"
+tiny-keccak = { version = "2", features = ["keccak"] }
+png = "0.17"
+base64 = "0.21"
