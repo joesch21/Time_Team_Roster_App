@@ -5,9 +5,12 @@ import App from './App.jsx';
 import './index.css';
 import { AuthProvider } from './lib/auth.jsx';
 import Web3Providers from './web3/provider.jsx';
-import { registerSW } from 'virtual:pwa-register';
 
-registerSW({ immediate: true });
+if (import.meta.env.PROD || import.meta.env.VITE_ENABLE_PWA_DEV === 'true') {
+  import('virtual:pwa-register')
+    .then(({ registerSW }) => registerSW({ immediate: true }))
+    .catch(() => {});
+}
 
 // Entry point for the React app.  We wrap the App component in a
 // BrowserRouter so that react‑router can manage client side routes.
